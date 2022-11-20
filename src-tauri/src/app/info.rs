@@ -1,7 +1,7 @@
 /**
  * アプリケーション固有情報
  */
-pub const PROJECT_NAME: &'static str = "weekly_timer";
+pub const PROJECT_NAME: &'static str = "weekly-alarm";
 
 #[cfg(debug_assertions)]
 pub const DATABASE_NAME: &'static str = "app_debug.db";

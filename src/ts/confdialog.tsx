@@ -65,6 +65,11 @@ export const ConfigDialog = ({closeFunc}: {closeFunc: () => void}) => {
         }
     }, [ deleteDialog, reservedayDialog, reloadFg ]);
 
+    // React.useEffect(() => {
+    //     document.body.classList.add('scroll-on');
+    //     return () => document.body.classList.remove('scroll-on');
+    // }, []);
+
     /**
      * スケジュールセット更新/追加
      * @param sch 対象スケジュール
@@ -130,7 +135,7 @@ export const ConfigDialog = ({closeFunc}: {closeFunc: () => void}) => {
                     </div>
                 </div>
                 {/* ボディ */}
-                <div className='d-flex justify-content-center w-100'>
+                <div className='d-flex justify-content-center w-100 h-80' style={{overflow: 'auto'}}>
                     <table className='table w-75'>
                         <thead>
                             <tr>
@@ -200,7 +205,7 @@ export const ConfigDialog = ({closeFunc}: {closeFunc: () => void}) => {
                 </div>
                 {/* フッタ */}
                 <div className='fixed-bottom w-100 h-10 bg-light align-items-center border-top'>
-                    <TBI mes='conf window footer' />
+                    {/* <TBI mes='conf window footer' /> */}
                 </div>
             </div>
             {/* {dialog} */}

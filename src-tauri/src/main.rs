@@ -11,6 +11,8 @@ mod api;
 use api::config;
 use api::chimes;
 use api::test;
+use api::sound;
+
 
 #[tokio::main]
 async fn main() {
@@ -41,8 +43,13 @@ async fn main() {
       chimes::create_chime,
       chimes::update_chime,
       chimes::delete_chime,
+      sound::create_sound,
+      sound::update_sound_title,
+      sound::delete_sound_data,
+      sound::read_all_sound_data,
       test::get_tuple,
       test::get_file_obj,
+
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

@@ -12,8 +12,10 @@ export const TBI = ({mes = ''}: {mes? : string}) => {
 export const FullFrame = ({className = '', children}: {className?: string, children?: React.ReactNode}) => {
     const width: string = window.innerWidth.toString() + 'px';
     const height: string = window.innerHeight.toString() + 'px';
+    // const width: string = '100vw';
+    // const height: string = '100%';
     return (
-        <div className={className} style={{width: width, height: height}}>
+        <div className={className} style={{width: width, height: height, maxHeight: 'none', maxWidth: 'none' , margin: 0}}>
             {children}
         </div>
     )

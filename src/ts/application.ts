@@ -15,17 +15,30 @@ import greens from '../audio/greensleeves.mp3';
 export namespace params {
     // export let sound: { [x: string]: HTMLSourceElement; };
     // チャイム音源のリスト
-    export let sound: { name: string, value?: string, copyright?: string, path?: string }[] = [];
+    export let sound: { name: string, value?: string, copyright?: string, path?: string, org?: boolean }[] = [];
 
     /**
      * paramsの初期化
      */
-    export const init = () => {
-        sound.push({name: 'school', value: school, copyright: 'T.B.D.'});
-        sound.push({name: 'greensleeves', value: greens});
+    export const init = async () => {
+        sound.push({name: 'school', value: school, copyright: 'BGM by OtoLogic(CC BY 4.0)', org: true});
+        // sound.push({name: 'greensleeves', value: greens, org: true});
+        //sound.push({name: 'buzz', path: '/Users/mamiyan/work/music/Opening_Buzzer02-1.mp3'});
+        //sound.push({name: 'door', path: '/Users/mamiyan/work/music/Doorbell-Melody01-1.mp3'});
         // sound['school'] = school;
+        const snds: any[] = await invoke('read_all_sound_data');
+        for (let snd of snds) {
+            sound.push({name: snd.title, path: snd.path});
+        } 
     }
 
+    export const reload_sound = async () => {
+        sound = sound.filter(v => v.org == true);
+        const snds: any[] = await invoke('read_all_sound_data');
+        for (let snd of snds) {
+            sound.push({name: snd.title, path: snd.path});
+        } 
+    }
     // export let audioContext: AudioContext;
     // export let audioSource: AudioBufferSourceNode;
 }

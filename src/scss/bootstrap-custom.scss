@@ -54,6 +54,23 @@ $utilities: (
 
 @import "node_modules/bootstrap/scss/bootstrap.scss";
 
+body {
+    overflow: hidden;
+}
+
+.scroll-on {
+    overflow: auto;
+}
+
+.marquee {
+	animation: marquee-anim 10s linear infinite;
+}
+
+@keyframes marquee-anim {
+	0%   { transform: translate(100%, 0); }
+	100% { transform: translate(-10%, 0); }
+}
+
 .center-header {
     /*margin-top: initial;
     margin-bottom: initial;

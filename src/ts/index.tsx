@@ -14,7 +14,10 @@ window.AudioContext = window.AudioContext || (window as any).webkitAudioContext;
 
 appWindow.setSize(new LogicalSize(800, 600));
 appWindow.setResizable(false);
-new Promise<void>(resolv => window.onload = () => resolv())
+Promise.all([
+    new Promise<void>(resolv => window.onload = () => resolv()),
+    params.init(),
+])
 .then(() => {
     const root: ReactDOM.Root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
     root.render(
@@ -23,7 +26,7 @@ new Promise<void>(resolv => window.onload = () => resolv())
         // </React.StrictMode>
     );
     globalTimer.start();
-    params.init();
+    // params.init();
     let date = Date.now() - (new Date().getTimezoneOffset() * 60000);
     console.log(date);
     console.log(globalTimer.get_datestring(Math.floor(date / 1000) % (3600 * 24)));

@@ -30,7 +30,7 @@ export const EditChimeDialog = (
     const [ eventName, setEventName ] = React.useState<string | null>(chime?.title ?? null);
     const [ invokeTime, setInvokeTime ] = React.useState<string | null>(chime?.invoke_time? globalTimer.get_timestring(chime.invoke_time): null);
     const [ soundName, setSoundName ] = React.useState<string | null>(chime?.chime ?? params.sound[0].name);
-    const [ playLabel, setPlayLabel ] = React.useState<string>('PLAY');
+    const [ playLabel, setPlayLabel ] = React.useState<string>('▶');
 
     const audioRef = React.useRef(new WebAudioAPI());
 
@@ -41,16 +41,16 @@ export const EditChimeDialog = (
     }
 
     const samplePlay = (sname: string | null) => {
-        if(playLabel == 'PLAY') {
+        if(playLabel == '▶') {
             console.log(soundName);
-            setPlayLabel('STOP');
+            setPlayLabel('⏹');
             if(sname) {
                 const snd = params.sound.find(v => v.name == sname);
                 snd && audioRef.current.play(snd.value || snd.path || '');    
             }    
         } else {
             audioRef.current.stop();
-            setPlayLabel('PLAY');
+            setPlayLabel('▶');
         }
     }
 
@@ -98,11 +98,11 @@ export const EditChimeDialog = (
                             { playLabel }
                         </Bsr.Button>
                     </div>
-                    <div className='col-auto'>
+                    {/* <div className='col-auto'>
                         <Bsr.Button variant='primary' size='sm' onClick={handleAppendSound}>
                             追加
                         </Bsr.Button>
-                    </div>
+                    </div> */}
                 </div>
 
             </div>

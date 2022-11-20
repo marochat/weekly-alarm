@@ -46,17 +46,17 @@ const PUBLIC_HOLIDAYS: [Holiday; 33] = [
 // Title, InvekeTime, chime, target_group
 struct RawChimeData(&'static str, &'static str, &'static str, &'static str);
 const SAMPLE_CHIMEDATA: [RawChimeData; 11] = [
-    RawChimeData("始業", "8:45:00", "greensleeves", "sample"),
-    RawChimeData("午前休憩", "10:15:00", "greensleeves", "sample"),
-    RawChimeData("午前2", "10:30:00", "greensleeves", "sample"),
-    RawChimeData("昼休み", "12:00:00", "greensleeves", "sample"),
-    RawChimeData("午後1", "13:00:00", "greensleeves", "sample"),
-    RawChimeData("午後休憩1", "14:30:00", "greensleeves", "sample"),
-    RawChimeData("午後2", "14:45:00", "greensleeves", "sample"),
-    RawChimeData("午後休憩2", "16:15:00", "greensleeves", "sample"),
-    RawChimeData("ウォーキング", "16:30:00", "greensleeves", "sample"),
-    RawChimeData("休息", "17:30:00", "greensleeves", "sample"),
-    RawChimeData("終業", "18:00:00", "greensleeves", "sample"),
+    RawChimeData("始業", "8:45:00", "school", "sample"),
+    RawChimeData("午前休憩", "10:15:00", "school", "sample"),
+    RawChimeData("午前2", "10:30:00", "school", "sample"),
+    RawChimeData("昼休み", "12:00:00", "school", "sample"),
+    RawChimeData("午後1", "13:00:00", "school", "sample"),
+    RawChimeData("午後休憩1", "14:30:00", "school", "sample"),
+    RawChimeData("午後2", "14:45:00", "school", "sample"),
+    RawChimeData("午後休憩2", "16:15:00", "school", "sample"),
+    RawChimeData("ウォーキング", "16:30:00", "school", "sample"),
+    RawChimeData("休息", "17:30:00", "school", "sample"),
+    RawChimeData("終業", "18:00:00", "school", "sample"),
 ];
 
 // const SAMPLE_CHIMEDATA2: [RawChimeData; 4] = [

@@ -17,6 +17,20 @@ pub async fn create(title: String, path: String) -> Result<i32, DbErr> {
     Ok(Entity::insert(rcd).exec(&conn).await?.last_insert_id)
 }
 
+pub async fn update_name(title: String, new_title: String) -> Result<entity::Model, DbErr> {
+    let conn = super::common::get_connection().await?;
+    let id = match Entity::find().filter(entity::Column::Title.eq(title)).one(&conn).await? {
+        Some(model) => model.id,
+        _ => return Err(DbErr::RecordNotFound("Recort Error".into()))
+    };
+    let rcd = entity::ActiveModel {
+        id: ActiveValue::Set(id),
+        title: ActiveValue::Set(new_title),
+        path: ActiveValue::NotSet,
+    };
+    Ok(rcd.update(&conn).await?)
+}
+
 pub async fn delete(id: i32) -> Result<u64, DbErr> {
     let conn = super::common::get_connection().await?;
     let tgt = entity::ActiveModel {

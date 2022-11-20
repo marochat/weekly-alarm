@@ -81,6 +81,7 @@ export const ClockBody = () => {
         globalTimer.timeDiv = timeDiv.current;
         const sevenSegs = sevensRef.map(v => v.current!);
         const colonSegs = colonsRef.map(v => v.current!);
+        globalTimer.prev_day = 0;
         timeDiv.current!.addEventListener('second', async (e) => {
             // console.log((e as CustomEvent).detail.date);
             let date: number = (e as CustomEvent).detail.date;
@@ -90,7 +91,8 @@ export const ClockBody = () => {
             if(wait_time.current && wait_time.current == date) {
                 const snd = params.sound.find(x => x.name == next_sound.current?.chime);
                 if(next_sound.current !== null && snd !== undefined && next_sound.current.enabled) {
-                    audioRef.current.play(snd.value || snd.path || '');
+                    audioRef.current.play(snd.value || snd.path || '', () => setFoot(''));
+                    snd.copyright && setFoot(<div className='marquee w-100'>{snd.copyright}</div>)
                 }
                 util.timeout(1000).then(() => {
                     const ev = new CustomEvent('schedule');
@@ -145,6 +147,7 @@ export const ClockBody = () => {
                 }
             });
         });
+        // setFoot(<div className='marquee w-100'>AAAAAAAAAAAAAA</div>)
         return () => {
             console.log('audioRef closed')
             audioRef.current.close();
@@ -180,8 +183,8 @@ export const ClockBody = () => {
                 </div>
             </div>
             {/* 時計エリアフッタ */}
-            <div className='d-flex align-items-center flex-row px-2 w-100 h-15' style={{backgroundColor: 'wheat'}}>
-                <div>{foot_txt}</div>
+            <div className='d-flex align-items-center flex-row px-2 w-100 h-15' style={{backgroundColor: 'wheat', overflow: 'hidden'}}>
+                {foot_txt}
             </div>
         </div>
     );
