@@ -5,7 +5,7 @@ import { basename } from '@tauri-apps/api/path';
 
 import { FullFrame, TBI, types } from './common';
 import { invoke } from '@tauri-apps/api/tauri';
-import { globalTimer, params, WebAudioAPI } from './application';
+import { globalTimer, params, getAudioSource } from './application';
 
 import { EditSoundItemDialog } from './editSoundItemDialog';
 
@@ -15,7 +15,9 @@ export const AlarmSoundConf =  ({closeFunc}: {closeFunc: () => void}) => {
     const [ playButtonMasks, setPlayButtonMasks ] = React.useState<boolean[]>([]);
     const [ dialog, setDialog ] = React.useState<JSX.Element | null>(null);
 
-    const audioRef = React.useRef(new WebAudioAPI());
+    // const audioRef = React.useRef(new WebAudioAPI());
+    const audioCtx = React.useRef<AudioContext | null>(null);
+    const audioSrc = React.useRef<AudioBufferSourceNode | null>(null);
 
     const [ playButtons, setPlayButtons ] = React.useReducer((state: string[], action: {idx: number, fg?: boolean}) => {
         if (action.fg === undefined) {
@@ -32,7 +34,9 @@ export const AlarmSoundConf =  ({closeFunc}: {closeFunc: () => void}) => {
         Array.from(Array(len).keys()).forEach(n => setPlayButtons({idx: n, fg: true}))
         setPlayButtonMasks(Array.from(Array(len).fill(false)));
         return () => {
-            audioRef.current.close();
+            // audioRef.current.close();
+            audioSrc.current?.stop();
+            audioCtx.current?.close();
         }
     }, []);
 
@@ -57,15 +61,20 @@ export const AlarmSoundConf =  ({closeFunc}: {closeFunc: () => void}) => {
         clearPlayButtonMask();
     }
 
-    const playSound = (n: number) => {
+    const playSound = async (n: number) => {
         if (playButtons[n] == '▶') {
             setPlayButtons({idx:n});
             setEditDisabled(true);
             setPlayButtonMask(n);
             const snd = sound[n].value || sound[n].path || '';
-            audioRef.current.play(snd, () => onPlayEnded(n));
+            audioCtx.current = new AudioContext();
+            audioSrc.current = await getAudioSource(audioCtx.current, snd);
+            audioSrc.current.onended = () => onPlayEnded(n);
+            audioSrc.current.start(0);
+            // audioRef.current.play(snd, () => onPlayEnded(n));
         } else {
-            audioRef.current.stop();
+            // audioRef.current.stop();
+            audioSrc && audioSrc.current!.stop()
             clearPlayButtonMask();
             setEditDisabled(false);
             setPlayButtons({idx:n, fg: true});

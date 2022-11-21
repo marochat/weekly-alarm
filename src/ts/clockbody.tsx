@@ -6,7 +6,7 @@ import React from 'react';
 import * as Bsr from 'react-bootstrap';
 
 import { TBI, FullFrame, types, util } from './common';
-import { params, globalTimer, WebAudioAPI } from './application';
+import { params, globalTimer, getAudioSource } from './application';
 import { invoke } from '@tauri-apps/api/tauri';
 import sevenSeg from '../inlinesvg/7Segment5.SVG';
 import colonSvg from '../inlinesvg/colon.SVG';
@@ -68,7 +68,9 @@ export const ClockBody = () => {
 
     const sevensRef = Array.from(Array(6)).map(_ => React.useRef<HTMLDivElement>(null));
     const colonsRef = Array.from(Array(2)).map(_ => React.useRef<HTMLDivElement>(null));
-    const audioRef = React.useRef(new WebAudioAPI());
+    // const audioRef = React.useRef(new WebAudioAPI());
+    const audioCtx = React.useRef<AudioContext | null>(null);
+    const audioSrc = React.useRef<AudioBufferSourceNode | null>(null);
 
     /**
      * コンポーネント初期化処理
@@ -91,7 +93,11 @@ export const ClockBody = () => {
             if(wait_time.current && wait_time.current == date) {
                 const snd = params.sound.find(x => x.name == next_sound.current?.chime);
                 if(next_sound.current !== null && snd !== undefined && next_sound.current.enabled) {
-                    audioRef.current.play(snd.value || snd.path || '', () => setFoot(''));
+                    // audioRef.current.play(snd.value || snd.path || '', () => setFoot(''));
+                    audioCtx.current = new AudioContext();
+                    audioSrc.current = await getAudioSource(audioCtx.current, snd.value || snd.path || '');
+                    audioSrc.current.onended = () => setFoot('');
+                    audioSrc.current.start(0);
                     snd.copyright && setFoot(<div className='marquee w-100'>{snd.copyright}</div>)
                 }
                 util.timeout(1000).then(() => {
@@ -150,9 +156,11 @@ export const ClockBody = () => {
         // setFoot(<div className='marquee w-100'>AAAAAAAAAAAAAA</div>)
         return () => {
             console.log('audioRef closed')
-            audioRef.current.close();
+            // audioRef.current.close();
+            audioSrc.current?.stop();
+            audioCtx.current?.close();
         }
-    }, [audioRef]);
+    }, []);
 
     return (
         <div ref={timeDiv} className='d-flex flex-column shadow rounded w-60 h-80'>

@@ -112,5 +112,5 @@ module.exports = {
     outputModule: true,
     asyncWebAssembly: true,
   },
-  target: 'web',
+  // target: 'web',
 };

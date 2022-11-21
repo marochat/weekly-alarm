@@ -6,7 +6,7 @@ import { basename } from '@tauri-apps/api/path';
 import { ajax, util, types, assertIsDefined, assertIsInstanceOf, assertNonNullabl } from './common';
 
 import school from '../audio/Japanese_School_Bell05-15.mp3';
-import greens from '../audio/greensleeves.mp3';
+// import greens from '../audio/greensleeves.mp3';
 
 // const path = require('path');
 /**
@@ -206,7 +206,7 @@ export namespace globalTimer {
 
 }
 
-export const WebAudioAPI = class {
+const WebAudioAPI = class {
     private readonly audioContext: AudioContext;
     private audioSource?: AudioBufferSourceNode;
     constructor() {
@@ -230,9 +230,11 @@ export const WebAudioAPI = class {
 
         }
         const audiob = await this.audioContext.decodeAudioData(aryb);
+        console.log(audiob);
         this.audioSource = this.audioContext.createBufferSource();
         this.audioSource.buffer = audiob;
-        this.audioSource.connect(this.audioContext.destination);
+        const res = this.audioSource.connect(this.audioContext.destination);
+        console.log(res);
         this.audioSource.start();
         if(onEnded){
             this.audioSource.onended = onEnded;
@@ -247,4 +249,16 @@ export const WebAudioAPI = class {
     public close = () => {
         this.audioContext.close();
     }
+}
+
+export const getAudioSource = async (ctx: AudioContext, url: string) => {
+    const src: AudioBufferSourceNode = ctx.createBufferSource();
+    const res = await fetch(url); //.then(res => res.arrayBuffer())
+    const arryb = await res.arrayBuffer();
+    const abuf = await ctx.decodeAudioData(arryb);
+    if(abuf !== undefined){
+        src.buffer = abuf;
+        src.connect(ctx.destination);
+    }
+    return src
 }

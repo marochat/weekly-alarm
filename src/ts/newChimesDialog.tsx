@@ -6,7 +6,7 @@ import React from 'react';
 import * as Bsr from 'react-bootstrap';
 
 import { types } from './common';
-import { params, WebAudioAPI } from './application';
+import { params, getAudioSource } from './application';
 
 import { Modal } from './ModalDialog';
 import { globalTimer } from './application';
