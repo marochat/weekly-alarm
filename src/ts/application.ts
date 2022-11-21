@@ -254,8 +254,23 @@ const WebAudioAPI = class {
 export const getAudioSource = async (ctx: AudioContext, url: string) => {
     const src: AudioBufferSourceNode = ctx.createBufferSource();
     const res = await fetch(url); //.then(res => res.arrayBuffer())
-    const arryb = await res.arrayBuffer();
-    const abuf = await ctx.decodeAudioData(arryb);
+    let aryb: ArrayBuffer;
+    try {
+        const res = await fetch(url);
+        if(res.status !== 200) {
+            throw Error;
+        }
+        aryb = await res.arrayBuffer();
+    } catch(error) {
+        //console.log(`err : ${error}`);
+        const val = await invoke('get_file_obj', { path: url })
+        .catch(e => console.log(e));
+        const val1 = new Uint8Array(val as Array<number>);
+        aryb = val1.buffer;
+
+    }
+    // const arryb = await res.arrayBuffer();
+    const abuf = await ctx.decodeAudioData(aryb);
     if(abuf !== undefined){
         src.buffer = abuf;
         src.connect(ctx.destination);
