@@ -69,8 +69,10 @@ export const AlarmSoundConf =  ({closeFunc}: {closeFunc: () => void}) => {
             const snd = sound[n].value || sound[n].path || '';
             audioCtx.current = new AudioContext();
             audioSrc.current = await getAudioSource(audioCtx.current, snd);
-            audioSrc.current.onended = () => onPlayEnded(n);
-            audioSrc.current.start(0);
+            if (audioSrc.current) {
+                audioSrc.current.onended = () => onPlayEnded(n);
+                audioSrc.current.start(0);
+            }
             // audioRef.current.play(snd, () => onPlayEnded(n));
         } else {
             // audioRef.current.stop();

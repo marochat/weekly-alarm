@@ -96,8 +96,11 @@ export const ClockBody = () => {
                     // audioRef.current.play(snd.value || snd.path || '', () => setFoot(''));
                     audioCtx.current = new AudioContext();
                     audioSrc.current = await getAudioSource(audioCtx.current, snd.value || snd.path || '');
-                    audioSrc.current.onended = () => setFoot('');
-                    audioSrc.current.start(0);
+                    if (audioSrc.current) {
+                        console.log(`alarm invoked. : ${snd.value || snd.path}`)
+                        audioSrc.current.onended = () => setFoot('');
+                        audioSrc.current.start(0);
+                    }
                     snd.copyright && setFoot(<div className='marquee w-100'>{snd.copyright}</div>)
                 }
                 util.timeout(1000).then(() => {
