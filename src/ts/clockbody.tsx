@@ -69,7 +69,6 @@ export const ClockBody = () => {
 
     const sevensRef = Array.from(Array(6)).map(_ => React.useRef<HTMLDivElement>(null));
     const colonsRef = Array.from(Array(2)).map(_ => React.useRef<HTMLDivElement>(null));
-    // const audioRef = React.useRef(new WebAudioAPI());
     const audioCtx = React.useRef<AudioContext | null>(null);
     const audioSrc = React.useRef<AudioBufferSourceNode | null>(null);
 
@@ -78,6 +77,7 @@ export const ClockBody = () => {
         audioSrc.current = await getAudioSource(audioCtx.current, dummyChime);
         audioSrc.current.onended = () => {
             console.log("dummy stoped.");
+            audioSrc.current!.disconnect();
             audioCtx.current!.destination.disconnect();
         }
         audioSrc.current.start(0);
@@ -87,35 +87,24 @@ export const ClockBody = () => {
      * コンポーネント初期化処理
      */
     React.useEffect(() => {
-        // const greens = require('../audio/greensleeves.mp3');
-        // const path = '/Users/mamiyan/work/src/tauri/react/weekly-alarm/src/audio/greensleeves.mp3'
-        // audioRef.current.play(path);
         globalTimer.timeDiv = timeDiv.current;
         const sevenSegs = sevensRef.map(v => v.current!);
         const colonSegs = colonsRef.map(v => v.current!);
         globalTimer.prev_day = 0;
         audioCtx.current = new AudioContext();
-        // getAudioSource(audioCtx.current, params.sound[0].value?? '').then(src => {
-        //     console.log('play sound!!')
-        //     src.start(0);
-        // })
 
         timeDiv.current!.addEventListener('second', async (e) => {
-            // console.log((e as CustomEvent).detail.date);
             let date: number = (e as CustomEvent).detail.date;
             sevenSegArray(sevenSegs, colonSegs, globalTimer.get_timestring(date));
             const snd = params.sound.find(x => x.name == next_sound.current?.chime);
-            // console.log(`${wait_time.current} : ${date} : ${snd!.value} : ${snd}`);
             if(wait_time.current && wait_time.current == date) {
                 const snd = params.sound.find(x => x.name == next_sound.current?.chime);
                 if(next_sound.current !== null && snd !== undefined && next_sound.current.enabled) {
-                    // audioRef.current.play(snd.value || snd.path || '', () => setFoot(''));
                     audioSrc.current = await getAudioSource(audioCtx.current!, snd.value || snd.path || '');
                     if (audioSrc.current) {
                         console.log(`alarm invoked. : ${snd.value || snd.path}`)
                         console.log(globalTimer.get_timestring(date))
                         audioSrc.current.onended = () => {
-                            console.log('alarm stoped....');
                             audioCtx.current!.destination.disconnect();
                             setFoot('');
                         };
