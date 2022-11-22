@@ -57,6 +57,7 @@ export const AlarmSoundConf =  ({closeFunc}: {closeFunc: () => void}) => {
 
     const onPlayEnded = (n: number) => {
         setPlayButtons({idx: n, fg: true});
+        audioCtx.current!.resume();
         setEditDisabled(false);
         clearPlayButtonMask();
     }
@@ -67,8 +68,8 @@ export const AlarmSoundConf =  ({closeFunc}: {closeFunc: () => void}) => {
             setEditDisabled(true);
             setPlayButtonMask(n);
             const snd = sound[n].value || sound[n].path || '';
-            audioCtx.current = new AudioContext();
-            audioSrc.current = await getAudioSource(audioCtx.current, snd);
+            if (audioCtx.current === null) audioCtx.current = new AudioContext();
+            audioSrc.current = await getAudioSource(audioCtx.current!, snd);
             if (audioSrc.current) {
                 audioSrc.current.onended = () => onPlayEnded(n);
                 audioSrc.current.start(0);

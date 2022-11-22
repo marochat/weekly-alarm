@@ -10,6 +10,7 @@ import { params, globalTimer, getAudioSource } from './application';
 import { invoke } from '@tauri-apps/api/tauri';
 import sevenSeg from '../inlinesvg/7Segment5.SVG';
 import colonSvg from '../inlinesvg/colon.SVG';
+import dummyChime from '../audio/Chime-Announce02-1.mp3';
 
 /**
  * 7セグ表示エリアに指定した時刻を表示する
@@ -72,10 +73,19 @@ export const ClockBody = () => {
     const audioCtx = React.useRef<AudioContext | null>(null);
     const audioSrc = React.useRef<AudioBufferSourceNode | null>(null);
 
+    const handleDummyClick = async () => {
+        audioCtx.current = new AudioContext();
+        audioSrc.current = await getAudioSource(audioCtx.current, dummyChime);
+        audioSrc.current.onended = () => {
+            console.log("dummy stoped.");
+            audioCtx.current!.destination.disconnect();
+        }
+        audioSrc.current.start(0);
+    }
+
     /**
      * コンポーネント初期化処理
      */
-
     React.useEffect(() => {
         // const greens = require('../audio/greensleeves.mp3');
         // const path = '/Users/mamiyan/work/src/tauri/react/weekly-alarm/src/audio/greensleeves.mp3'
@@ -84,6 +94,12 @@ export const ClockBody = () => {
         const sevenSegs = sevensRef.map(v => v.current!);
         const colonSegs = colonsRef.map(v => v.current!);
         globalTimer.prev_day = 0;
+        audioCtx.current = new AudioContext();
+        // getAudioSource(audioCtx.current, params.sound[0].value?? '').then(src => {
+        //     console.log('play sound!!')
+        //     src.start(0);
+        // })
+
         timeDiv.current!.addEventListener('second', async (e) => {
             // console.log((e as CustomEvent).detail.date);
             let date: number = (e as CustomEvent).detail.date;
@@ -94,12 +110,17 @@ export const ClockBody = () => {
                 const snd = params.sound.find(x => x.name == next_sound.current?.chime);
                 if(next_sound.current !== null && snd !== undefined && next_sound.current.enabled) {
                     // audioRef.current.play(snd.value || snd.path || '', () => setFoot(''));
-                    audioCtx.current = new AudioContext();
-                    audioSrc.current = await getAudioSource(audioCtx.current, snd.value || snd.path || '');
+                    audioSrc.current = await getAudioSource(audioCtx.current!, snd.value || snd.path || '');
                     if (audioSrc.current) {
                         console.log(`alarm invoked. : ${snd.value || snd.path}`)
-                        audioSrc.current.onended = () => setFoot('');
-                        audioSrc.current.start(0);
+                        console.log(globalTimer.get_timestring(date))
+                        audioSrc.current.onended = () => {
+                            console.log('alarm stoped....');
+                            audioCtx.current!.destination.disconnect();
+                            setFoot('');
+                        };
+                        
+                        audioSrc.current.start();
                     }
                     snd.copyright && setFoot(<div className='marquee w-100'>{snd.copyright}</div>)
                 }
@@ -160,8 +181,8 @@ export const ClockBody = () => {
         return () => {
             console.log('audioRef closed')
             // audioRef.current.close();
-            audioSrc.current?.stop();
-            audioCtx.current?.close();
+            // audioSrc.current?.stop();
+            // audioCtx.current?.close();
         }
     }, []);
 
@@ -189,7 +210,7 @@ export const ClockBody = () => {
                     <div ref={sevensRef[5]} dangerouslySetInnerHTML={{ __html: sevenSeg }} />
                 </div>
                 {/* clock footer */}
-                <div className='d-flex flex-row bg-primary w-90 px-3 py-1'>
+                <div className='d-flex flex-row bg-primary w-90 px-3 py-1' onClick={handleDummyClick}>
                     {clock_footer}
                 </div>
             </div>
