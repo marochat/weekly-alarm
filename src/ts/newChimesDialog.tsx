@@ -1,15 +1,9 @@
 import { invoke } from '@tauri-apps/api';
-import { ask, open as fileOpen } from '@tauri-apps/api/dialog';
-import { basename } from '@tauri-apps/api/path';
-
 import React from 'react';
 import * as Bsr from 'react-bootstrap';
 
 import { types } from './common';
-import { params, getAudioSource } from './application';
-
 import { Modal } from './ModalDialog';
-import { globalTimer } from './application';
 
 export const NewChimesDialog = (
     {

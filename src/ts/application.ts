@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
+import { platform } from '@tauri-apps/api/os';
 import { appWindow, LogicalSize } from '@tauri-apps/api/window';
 import { message, ask, open as fileOpen } from '@tauri-apps/api/dialog';
 import { basename } from '@tauri-apps/api/path';
@@ -207,14 +208,15 @@ export namespace globalTimer {
 
 }
 
-const WebAudioAPI = class {
-    private readonly audioContext: AudioContext;
+export const WebAudioAPI = class {
+    private audioContext?: AudioContext;
     private audioSource?: AudioBufferSourceNode;
     constructor() {
-        this.audioContext = new AudioContext();
     }
 
     public play = async (snd: string, onEnded?: () => void) => {
+        await platform();
+        this.audioContext = new AudioContext();
         let aryb: ArrayBuffer;
         try {
             const res = await fetch(snd);
@@ -243,16 +245,18 @@ const WebAudioAPI = class {
     }
 
     public stop = () => {
-        if(this.audioSource) this.audioSource.stop();
-        //this.audioContext.close();
+        this.audioSource && this.audioSource.stop();
+        this.audioContext && this.audioContext.close();
+        this.audioContext = undefined;
+        this.audioSource = undefined;
     }
 
     public close = () => {
-        this.audioContext.close();
+        this.audioContext && this.audioContext.close();
     }
 }
 
-export const getAudioSource = async (ctx: AudioContext, url: string) => {
+const getAudioSource = async (ctx: AudioContext, url: string) => {
     const src: AudioBufferSourceNode = ctx.createBufferSource();
     // const res = await fetch(url); //.then(res => res.arrayBuffer())
     let aryb: ArrayBuffer;

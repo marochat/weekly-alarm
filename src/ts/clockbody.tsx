@@ -6,7 +6,7 @@ import React from 'react';
 import * as Bsr from 'react-bootstrap';
 
 import { TBI, FullFrame, types, util } from './common';
-import { params, globalTimer, getAudioSource } from './application';
+import { params, globalTimer, WebAudioAPI } from './application';
 import { invoke } from '@tauri-apps/api/tauri';
 import sevenSeg from '../inlinesvg/7Segment5.SVG';
 import colonSvg from '../inlinesvg/colon.SVG';
@@ -69,18 +69,20 @@ export const ClockBody = () => {
 
     const sevensRef = Array.from(Array(6)).map(_ => React.useRef<HTMLDivElement>(null));
     const colonsRef = Array.from(Array(2)).map(_ => React.useRef<HTMLDivElement>(null));
-    const audioCtx = React.useRef<AudioContext | null>(null);
-    const audioSrc = React.useRef<AudioBufferSourceNode | null>(null);
+    // const audioCtx = React.useRef<AudioContext | null>(null);
+    // const audioSrc = React.useRef<AudioBufferSourceNode | null>(null);
+    const audioRef = React.useRef(new WebAudioAPI());
 
     const handleDummyClick = async () => {
-        audioCtx.current = new AudioContext();
-        audioSrc.current = await getAudioSource(audioCtx.current, dummyChime);
-        audioSrc.current.onended = () => {
-            console.log("dummy stoped.");
-            audioSrc.current!.disconnect();
-            audioCtx.current!.destination.disconnect();
-        }
-        audioSrc.current.start(0);
+        // audioCtx.current = new AudioContext();
+        // audioSrc.current = await getAudioSource(audioCtx.current, dummyChime);
+        // audioSrc.current.onended = () => {
+        //     console.log("dummy stoped.");
+        //     audioSrc.current!.disconnect();
+        //     audioCtx.current!.destination.disconnect();
+        // }
+        // audioSrc.current.start(0);
+        
     }
 
     /**
@@ -91,7 +93,11 @@ export const ClockBody = () => {
         const sevenSegs = sevensRef.map(v => v.current!);
         const colonSegs = colonsRef.map(v => v.current!);
         globalTimer.prev_day = 0;
-        audioCtx.current = new AudioContext();
+
+        util.timeout(2000).then(() => {
+            audioRef.current.play(dummyChime);
+        });
+        // audioCtx.current = new AudioContext();
 
         timeDiv.current!.addEventListener('second', async (e) => {
             let date: number = (e as CustomEvent).detail.date;
@@ -100,17 +106,18 @@ export const ClockBody = () => {
             if(wait_time.current && wait_time.current == date) {
                 const snd = params.sound.find(x => x.name == next_sound.current?.chime);
                 if(next_sound.current !== null && snd !== undefined && next_sound.current.enabled) {
-                    audioSrc.current = await getAudioSource(audioCtx.current!, snd.value || snd.path || '');
-                    if (audioSrc.current) {
-                        console.log(`alarm invoked. : ${snd.value || snd.path}`)
-                        console.log(globalTimer.get_timestring(date))
-                        audioSrc.current.onended = () => {
-                            audioCtx.current!.destination.disconnect();
-                            setFoot('');
-                        };
+                    // audioSrc.current = await getAudioSource(audioCtx.current!, snd.value || snd.path || '');
+                    // if (audioSrc.current) {
+                    //     console.log(`alarm invoked. : ${snd.value || snd.path}`)
+                    //     console.log(globalTimer.get_timestring(date))
+                    //     audioSrc.current.onended = () => {
+                    //         audioCtx.current!.destination.disconnect();
+                    //         setFoot('');
+                    //     };
                         
-                        audioSrc.current.start();
-                    }
+                    //     audioSrc.current.start();
+                    // }
+                    audioRef.current.play(snd.value || snd.path || '', () => setFoot(''));
                     snd.copyright && setFoot(<div className='marquee w-100'>{snd.copyright}</div>)
                 }
                 util.timeout(1000).then(() => {

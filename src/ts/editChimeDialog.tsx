@@ -6,7 +6,7 @@ import React from 'react';
 import * as Bsr from 'react-bootstrap';
 
 import { types } from './common';
-import { params, getAudioSource } from './application';
+import { params, WebAudioAPI } from './application';
 
 import { Modal } from './ModalDialog';
 import { globalTimer } from './application';
@@ -32,9 +32,9 @@ export const EditChimeDialog = (
     const [ soundName, setSoundName ] = React.useState<string | null>(chime?.chime ?? params.sound[0].name);
     const [ playLabel, setPlayLabel ] = React.useState<string>('▶');
 
-    // const audioRef = React.useRef(new WebAudioAPI());
-    const audioSrc = React.useRef<AudioBufferSourceNode | null>(null);
-    const audioCtx = React.useRef<AudioContext | null>(null);
+    const audioRef = React.useRef(new WebAudioAPI());
+    // const audioSrc = React.useRef<AudioBufferSourceNode | null>(null);
+    // const audioCtx = React.useRef<AudioContext | null>(null);
 
     const handleAppendSound = async () => {
         const fname = await fileOpen({filters:[{name: 'Audio', extensions: ['mp3']}]});
@@ -49,14 +49,16 @@ export const EditChimeDialog = (
             if(sname) {
                 const snd = params.sound.find(v => v.name == sname);
                 if (snd) {
-                    audioCtx.current = new AudioContext();
-                    audioSrc.current = await getAudioSource(audioCtx.current, snd.value || snd.path || '');
-                    audioSrc.current.onended = () => setPlayLabel('▶');
-                    audioSrc.current.start(0)
+                    // audioCtx.current = new AudioContext();
+                    // audioSrc.current = await getAudioSource(audioCtx.current, snd.value || snd.path || '');
+                    // audioSrc.current.onended = () => setPlayLabel('▶');
+                    // audioSrc.current.start(0)
+                    audioRef.current.play(snd.value || snd.path || '', () => setPlayLabel('▶'));
                 }
             }    
         } else {
-            audioSrc && audioSrc.current!.stop();
+            // audioSrc && audioSrc.current!.stop();
+            audioRef.current.stop();
             setPlayLabel('▶');
         }
     }
@@ -64,9 +66,9 @@ export const EditChimeDialog = (
     const makeBody = (): JSX.Element => {
         return (
             <div>
-                <Bsr.Form.Label htmlFor='chimeTitleId'>
+                <label className='form-label' htmlFor='chimeTitleId'>
                     アラームイベント名
-                </Bsr.Form.Label>
+                </label>
                 <Bsr.Form.Control
                     type='text'
                     id='chimeTitleId'
@@ -74,18 +76,18 @@ export const EditChimeDialog = (
                     placeholder={chime?.title? '': 'イベント名を入力'}
                     onChange={(e) => setEventName(e.target.value)}
                 />
-                <Bsr.Form.Label className='mt-2' htmlFor='chimeInvokeId'>
+                <label className='form-label mt-2' htmlFor='chimeInvokeId'>
                     アラーム時刻
-                </Bsr.Form.Label>
+                </label>
                 <Bsr.Form.Control
                     type='time'
                     id='chimeInvokeId'
                     defaultValue={chime?.invoke_time? globalTimer.get_timestring(chime.invoke_time): ''}
                     onChange={(e) => setInvokeTime(e.target.value)}
                 />
-                <Bsr.Form.Label className='mt-2' htmlFor='chimeSoundId'>
+                <label className='form-label mt-2' htmlFor='chimeSoundId'>
                     アラーム音選択
-                </Bsr.Form.Label>
+                </label>
                 <div className='row d-flex align-items-center'>
                     <div className='col'>
                         <Bsr.Form.Select
@@ -136,8 +138,9 @@ export const EditChimeDialog = (
     React.useEffect(() => {
         return () => {
             // ダイアログを閉じるときにオーディオをクローズする
-            audioSrc.current?.stop();
-            audioCtx.current?.close();
+            // audioSrc.current?.stop();
+            // audioCtx.current?.close();
+            audioRef.current.close();
         }
     }, []);
 
