@@ -13,6 +13,7 @@ import { NewChimesDialog } from './newChimesDialog';
 export const EditChimesDiv = ({sch, reload, hideFunc}: {sch:types.ScheduleItem, reload: () => void, hideFunc: () => void}) => {
     const [ chimesVal, setChimesVal ] = React.useState<types.Chimes[]>([]);
     const [ chimes, setChimes ] = React.useState<types.Chimes | null>(null);
+    const [ selectedChimesId, setSelectedChimesId ] = React.useState<number>(sch.daily_chimes_id ?? 0);
 
     const [ newChimesDialog, setNewChimesDialog ] = React.useState<JSX.Element | null>(null);
     const [ chimeDialogs, setChimeDialogs ] = React.useState<(JSX.Element | null)[]>([]);
@@ -24,6 +25,7 @@ export const EditChimesDiv = ({sch, reload, hideFunc}: {sch:types.ScheduleItem, 
     console.log(sch);
     React.useEffect(() => {
         invoke('read_all_chimes').then(val => {
+            setSelectedChimesId(sch.daily_chimes_id ?? 0);
             const cmsv: types.Chimes[] = val as types.Chimes[];
             setChimesVal(cmsv);
             const cms: types.Chimes = cmsv.find(v => v[0].id == sch.daily_chimes_id)!;
@@ -38,6 +40,7 @@ export const EditChimesDiv = ({sch, reload, hideFunc}: {sch:types.ScheduleItem, 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedId: number = parseInt(e.target.value);
         const selectedChime: types.Chimes | null = chimesVal.find((v, n) => v[0].id == selectedId) ?? null
+        setSelectedChimesId(selectedId);
         if(selectedChime) {
             selectedChime[1].sort((a, b) => a.invoke_time - b.invoke_time);
         }
@@ -49,7 +52,7 @@ export const EditChimesDiv = ({sch, reload, hideFunc}: {sch:types.ScheduleItem, 
         invoke('schedule_update',{id: sch.id, chimesId: selectedId}).then(() => {
             reload();
         }).catch(e => console.log(e));
-        // reload1();
+        reload1();
     }
 
     const handleNewChimesButton = () => {
@@ -75,7 +78,7 @@ export const EditChimesDiv = ({sch, reload, hideFunc}: {sch:types.ScheduleItem, 
 
     const closeChimeDialog = () => {
         setChimeDialogs(chimeDialogs.map(v => null));
-        // reload();
+        reload();
         reload1();
     }
     return (
@@ -85,11 +88,12 @@ export const EditChimesDiv = ({sch, reload, hideFunc}: {sch:types.ScheduleItem, 
                 <h6 className='my-0 mx-3'>アラームセット選択</h6>
                 <span className='ms-4'>
                     { chimesVal.length != 0 &&
-                    <Bsr.Form.Select
+                    <select className='form-control'
                         ref={selectCtl}
                         aria-label='alarm-set select'
                         onChange={handleSelectChange}
-                        defaultValue={sch.daily_chimes_id ?? 0}
+                        //defaultValue={sch.daily_chimes_id ?? 0}
+                        value={selectedChimesId}
                         // value={selectVal}
                     >
                         {/* {util.debugstr(initVal)} */}
@@ -102,7 +106,7 @@ export const EditChimesDiv = ({sch, reload, hideFunc}: {sch:types.ScheduleItem, 
                             <option value={0}></option>
                         )}
                         {/* <option>aaa</option> */}
-                    </Bsr.Form.Select>
+                    </select>
                     }
                 </span>
                 <span className='ms-4'>
