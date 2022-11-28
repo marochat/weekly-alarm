@@ -52,7 +52,7 @@ export const EditChimesDiv = ({sch, reload, hideFunc}: {sch:types.ScheduleItem, 
         invoke('schedule_update',{id: sch.id, chimesId: selectedId}).then(() => {
             reload();
         }).catch(e => console.log(e));
-        reload1();
+        //reload();
     }
 
     const handleNewChimesButton = () => {
