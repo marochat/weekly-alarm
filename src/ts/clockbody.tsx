@@ -179,6 +179,9 @@ export const ClockBody = () => {
                             </div>
                         );
                     } else {
+                        // ここでRef変数をクリアしないと休止日にも前日の最後のアラームが発生してしまう
+                        wait_time.current = null;
+                        next_sound.current = null;
                         setClockFooter(
                             <div className='mx-2'>休止予定</div>
                         );
