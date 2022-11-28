@@ -208,15 +208,13 @@ export namespace globalTimer {
 
 }
 
-export const WebAudioAPI = class {
+const WebAudioAPI = class {
     private audioContext?: AudioContext;
     private audioSource?: AudioBufferSourceNode;
     constructor() {
     }
 
     public play = async (snd: string, onEnded?: () => void) => {
-        await platform();
-        this.audioContext = new AudioContext();
         let aryb: ArrayBuffer;
         try {
             const res = await fetch(snd);
@@ -232,13 +230,14 @@ export const WebAudioAPI = class {
             aryb = val1.buffer;
 
         }
+        console.log('api play')
+        await invoke('logging');
+        this.audioContext = new AudioContext();
         const audiob = await this.audioContext.decodeAudioData(aryb);
-        console.log(audiob);
         this.audioSource = this.audioContext.createBufferSource();
         this.audioSource.buffer = audiob;
         const res = this.audioSource.connect(this.audioContext.destination);
-        console.log(res);
-        this.audioSource.start();
+        this.audioSource.start(0);
         if(onEnded){
             this.audioSource.onended = onEnded;
         }
@@ -252,11 +251,12 @@ export const WebAudioAPI = class {
     }
 
     public close = () => {
+        console.log('audio close!')
         this.audioContext && this.audioContext.close();
     }
 }
 
-const getAudioSource = async (ctx: AudioContext, url: string) => {
+export const getAudioSource = async (ctx: AudioContext, url: string) => {
     const src: AudioBufferSourceNode = ctx.createBufferSource();
     // const res = await fetch(url); //.then(res => res.arrayBuffer())
     let aryb: ArrayBuffer;

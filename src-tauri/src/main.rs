@@ -23,6 +23,7 @@ async fn main() {
   // ディスパッチャ起動
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
+      config::logging,
       config::test_cmd,
       config::set_config_param,
       config::get_config_param,

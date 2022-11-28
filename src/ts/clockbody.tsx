@@ -6,7 +6,7 @@ import React from 'react';
 import * as Bsr from 'react-bootstrap';
 
 import { TBI, FullFrame, types, util } from './common';
-import { params, globalTimer, WebAudioAPI } from './application';
+import { params, globalTimer, getAudioSource } from './application';
 import { invoke } from '@tauri-apps/api/tauri';
 import sevenSeg from '../inlinesvg/7Segment5.SVG';
 import colonSvg from '../inlinesvg/colon.SVG';
@@ -69,9 +69,9 @@ export const ClockBody = () => {
 
     const sevensRef = Array.from(Array(6)).map(_ => React.useRef<HTMLDivElement>(null));
     const colonsRef = Array.from(Array(2)).map(_ => React.useRef<HTMLDivElement>(null));
-    // const audioCtx = React.useRef<AudioContext | null>(null);
-    // const audioSrc = React.useRef<AudioBufferSourceNode | null>(null);
-    const audioRef = React.useRef(new WebAudioAPI());
+    const audioCtx = React.useRef<AudioContext | null>(null);
+    const audioSrc = React.useRef<AudioBufferSourceNode | null>(null);
+    // const audioRef = React.useRef(new WebAudioAPI());
 
     const handleDummyClick = async () => {
         // audioCtx.current = new AudioContext();
@@ -94,10 +94,22 @@ export const ClockBody = () => {
         const colonSegs = colonsRef.map(v => v.current!);
         globalTimer.prev_day = 0;
 
-        util.timeout(2000).then(() => {
-            audioRef.current.play(dummyChime);
-        });
-        // audioCtx.current = new AudioContext();
+        // util.timeout(2000).then(() => {
+        // });
+        // audioRef.current.play(dummyChime);
+        invoke('logging', {mes: 'invoke initial sound.'}).then(async () => {
+            //console.log(val)
+            audioCtx.current = new AudioContext();
+            audioSrc.current = await getAudioSource(audioCtx.current!, dummyChime);
+            console.log('ini start11')
+            audioSrc.current.onended = () => console.log('ini ended...')
+            audioSrc.current.start(0);
+            // getAudioSource(audioCtx.current!, dummyChime).then(src => {
+            //     console.log('ini start11')
+            //     src.onended = () => console.log('ini ended...')
+            //     src.start(0);
+            // })    
+        })
 
         timeDiv.current!.addEventListener('second', async (e) => {
             let date: number = (e as CustomEvent).detail.date;
@@ -106,19 +118,20 @@ export const ClockBody = () => {
             if(wait_time.current && wait_time.current == date) {
                 const snd = params.sound.find(x => x.name == next_sound.current?.chime);
                 if(next_sound.current !== null && snd !== undefined && next_sound.current.enabled) {
-                    // audioSrc.current = await getAudioSource(audioCtx.current!, snd.value || snd.path || '');
-                    // if (audioSrc.current) {
-                    //     console.log(`alarm invoked. : ${snd.value || snd.path}`)
-                    //     console.log(globalTimer.get_timestring(date))
-                    //     audioSrc.current.onended = () => {
-                    //         audioCtx.current!.destination.disconnect();
-                    //         setFoot('');
-                    //     };
-                        
-                    //     audioSrc.current.start();
-                    // }
-                    audioRef.current.play(snd.value || snd.path || '', () => setFoot(''));
-                    snd.copyright && setFoot(<div className='marquee w-100'>{snd.copyright}</div>)
+                    await invoke('logging', {mes: globalTimer.get_timestring(date)});
+                    audioCtx.current = new AudioContext();
+                    audioSrc.current = await getAudioSource(audioCtx.current!, snd.value || snd.path || '');
+                    if (audioSrc.current) {
+                        // console.log(`alarm invoked. : ${snd.value || snd.path}`)
+                        // console.log(globalTimer.get_timestring(date))
+                        audioSrc.current.onended = () => {
+                            audioCtx.current!.destination.disconnect();
+                            setFoot('');
+                        };
+                        audioSrc.current.start();
+                        snd.copyright && setFoot(<div className='marquee w-100'>{snd.copyright}</div>)
+                    }
+                    // audioRef.current.play(snd.value || snd.path || '', () => setFoot(''));
                 }
                 util.timeout(1000).then(() => {
                     const ev = new CustomEvent('schedule');

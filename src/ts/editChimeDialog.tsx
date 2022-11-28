@@ -6,7 +6,7 @@ import React from 'react';
 import * as Bsr from 'react-bootstrap';
 
 import { types } from './common';
-import { params, WebAudioAPI } from './application';
+import { params, getAudioSource } from './application';
 
 import { Modal } from './ModalDialog';
 import { globalTimer } from './application';
@@ -32,9 +32,9 @@ export const EditChimeDialog = (
     const [ soundName, setSoundName ] = React.useState<string | null>(chime?.chime ?? params.sound[0].name);
     const [ playLabel, setPlayLabel ] = React.useState<string>('▶');
 
-    const audioRef = React.useRef(new WebAudioAPI());
-    // const audioSrc = React.useRef<AudioBufferSourceNode | null>(null);
-    // const audioCtx = React.useRef<AudioContext | null>(null);
+    // const audioRef = React.useRef(new WebAudioAPI());
+    const audioSrc = React.useRef<AudioBufferSourceNode | null>(null);
+    const audioCtx = React.useRef<AudioContext | null>(null);
 
     const handleAppendSound = async () => {
         const fname = await fileOpen({filters:[{name: 'Audio', extensions: ['mp3']}]});
@@ -49,16 +49,17 @@ export const EditChimeDialog = (
             if(sname) {
                 const snd = params.sound.find(v => v.name == sname);
                 if (snd) {
-                    // audioCtx.current = new AudioContext();
-                    // audioSrc.current = await getAudioSource(audioCtx.current, snd.value || snd.path || '');
-                    // audioSrc.current.onended = () => setPlayLabel('▶');
-                    // audioSrc.current.start(0)
-                    audioRef.current.play(snd.value || snd.path || '', () => setPlayLabel('▶'));
+                    await invoke('logging');
+                    audioCtx.current = new AudioContext();
+                    audioSrc.current = await getAudioSource(audioCtx.current, snd.value || snd.path || '');
+                    audioSrc.current.onended = () => setPlayLabel('▶');
+                    audioSrc.current.start(0)
+                    // audioRef.current.play(snd.value || snd.path || '', () => setPlayLabel('▶'));
                 }
             }    
         } else {
-            // audioSrc && audioSrc.current!.stop();
-            audioRef.current.stop();
+            audioSrc && audioSrc.current!.stop();
+            // audioRef.current.stop();
             setPlayLabel('▶');
         }
     }
@@ -138,9 +139,9 @@ export const EditChimeDialog = (
     React.useEffect(() => {
         return () => {
             // ダイアログを閉じるときにオーディオをクローズする
-            // audioSrc.current?.stop();
-            // audioCtx.current?.close();
-            audioRef.current.close();
+            audioSrc.current?.stop();
+            audioCtx.current?.close();
+            // audioRef.current.close();
         }
     }, []);
 

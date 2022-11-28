@@ -6,6 +6,13 @@ use crate::crud::audio_data;
 use crate::entities::audio_data as audio_data_entity;
 
 #[tauri::command]
+pub fn logging(mes: Option<String>) {
+    if let Some(val) = mes {
+        println!("{}", val);
+    }
+}
+
+#[tauri::command]
 pub async fn test_cmd(val: String) -> String {
     println!("recieveed: {}", val);
     "Hello Tauri World".into()
