@@ -200,7 +200,6 @@ export const AlarmSoundConf =  ({closeFunc}: {closeFunc: () => void}) => {
                 {/* ボディ */}
                 {/* フッタ */}
                 <div className='fixed-bottom w-100 h-10 bg-light align-items-center border-top'>
-                    AAAA
                 </div>
             </div>
             {dialog}

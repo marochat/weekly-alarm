@@ -201,6 +201,11 @@ export namespace globalTimer {
         return ndate.getFullYear() + '/' + ('00' + (ndate.getMonth() + 1)).slice(-2) + '/' + ('00' + ndate.getDate()).slice(-2);
     }
 
+    export const get_todaystring = (): string => {
+        let ndate = new Date();
+        return ndate.getFullYear() + '/' + ('00' + (ndate.getMonth() + 1)).slice(-2) + '/' + ('00' + ndate.getDate()).slice(-2);
+    }
+
     export const get_datestring_hyfun = (udate: number): string => {
         let ndate = new Date(udate * 24 * 3600 * 1000);
         return ndate.getFullYear() + '-' + ('00' + (ndate.getMonth() + 1)).slice(-2) + '-' + ('00' + ndate.getDate()).slice(-2);

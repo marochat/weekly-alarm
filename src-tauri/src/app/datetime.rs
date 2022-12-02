@@ -159,13 +159,13 @@ impl From<&Date<Utc>> for MonthAndDay {
 
 impl From<YearDate> for NaiveDate {
     fn from(yd: YearDate) -> Self {
-        NaiveDate::from_ymd(yd.0, yd.1 as u32, yd.2 as u32)
+        NaiveDate::from_ymd_opt(yd.0, yd.1 as u32, yd.2 as u32).unwrap()
     }
 }
 
 impl From<YearDate> for Unixdays {
     fn from(yd: YearDate) -> Self {
-        let nd = NaiveDate::from_ymd(yd.0, yd.1 as u32, yd.2 as u32);
+        let nd = NaiveDate::from_ymd_opt(yd.0, yd.1 as u32, yd.2 as u32).unwrap();
         let ndt: NaiveDateTime = nd.and_time(Seconds(0).into());
         let tmstmp = ndt.timestamp();
         Unixdays((tmstmp / ONE_DAY_SECONDS as i64).try_into().unwrap())

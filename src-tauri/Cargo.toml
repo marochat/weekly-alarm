@@ -12,12 +12,12 @@ rust-version = "1.57"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.2.0", features = [] }
+tauri-build = { version = "1.2.1", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.2.0", features = ["api-all", "devtools"] }
+tauri = { version = "1.2.1", features = ["api-all", "devtools"] }
 tokio = { version = "1.22.0", features = ["full"] }
 dotenv = "0.15.0"
 sea-orm = { version = "0.9.2", features = ["sqlx-sqlite", "runtime-tokio-native-tls", "macros"] }
@@ -25,6 +25,7 @@ migration = { path = "migration" }
 regex = "1.7.0"
 urlencoding = "2.1.0"
 chrono = "0.4.23"
+csv = "1.1.6"
 
 [features]
 # by default Tauri runs in production mode

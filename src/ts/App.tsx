@@ -4,6 +4,7 @@ import { TBI, FullFrame } from './common';
 import { ConfigDialog } from './confdialog';
 import { AlarmSoundConf } from './alarmSound';
 import { ClockBody } from './clockbody';
+import { HolidayConf } from './holidayConf';
 import { AboutDialog } from './about';
 import { globalTimer } from './application';
 
@@ -16,6 +17,7 @@ export const App = () => {
     const [ configDlg, setConfigDlg ] = React.useState<JSX.Element | null>(null);
     const [ menuShow, setMenuShow ] = React.useState<boolean>(false);
     const [ dialogDiv, setDialogDiv ] = React.useState<JSX.Element | null>(null);
+    const [ holidayDiv, setHolidayDiv ] = React.useState<JSX.Element | null>(null);
     const [ aboutDialog, setAboutDialog ] = React.useState<JSX.Element | null>(null);
 
     const handleMenuShow = () => setMenuShow(true);
@@ -50,6 +52,14 @@ export const App = () => {
         // );
         setMenuShow(false);
         setDialogDiv(<AlarmSoundConf closeFunc={closeSoundConf} />);
+    }
+
+    const closeHolidayConf = () => {
+        setHolidayDiv(null);
+    }
+    const handleHolidayConf = () => {
+        setMenuShow(false);
+        setHolidayDiv(<HolidayConf closeFunc={closeHolidayConf} />);
     }
 
     const handleAbout = () => {
@@ -93,6 +103,9 @@ export const App = () => {
                         <Bsr.ListGroup.Item as='a' href='#' onClick={handleSoundConf}>
                             アラーム音管理
                         </Bsr.ListGroup.Item>
+                        <Bsr.ListGroup.Item as='a' href='#' onClick={handleHolidayConf}>
+                            祝日管理
+                        </Bsr.ListGroup.Item>
                         <Bsr.ListGroup.Item as='a' href='#' onClick={handleAbout}>
                             WeeklyAlarmについて
                         </Bsr.ListGroup.Item>
@@ -102,6 +115,7 @@ export const App = () => {
             {/* 設定画面 */}
             {configDlg}
             {dialogDiv}
+            {holidayDiv}
             {aboutDialog}
         </React.Fragment>
     );

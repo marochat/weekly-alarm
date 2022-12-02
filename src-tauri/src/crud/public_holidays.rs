@@ -1,5 +1,3 @@
-use std::rc;
-
 /**
  * 祝祭日マスターデータテーブルへのCRUD処理モジュール
  */
@@ -45,6 +43,7 @@ pub async fn delete(id: i32) -> Result<u64, DbErr> {
     Ok(tgt.delete(&conn).await?.rows_affected)
 }
 
+#[allow(dead_code)]
 pub async fn read_all() -> Result<Vec<entity::Model>, DbErr> {
     let conn = super::common::get_connection().await?;
     Ok(Entity::find().all(&conn).await?)
@@ -55,7 +54,13 @@ pub async fn check_holiday(mad: Unixdays) -> Result<Option<entity::Model> , DbEr
     Ok(Entity::find().filter(entity::Column::Date.eq(i32::from(mad))).one(&conn).await?)
 }
 
+#[allow(dead_code)]
 pub async fn read_title(title: String) -> Result<Option<entity::Model>, DbErr> {
     let conn = super::common::get_connection().await?;
     Ok(Entity::find().filter(entity::Column::Title.eq(title)).one(&conn).await?)
+}
+
+pub async fn read_all_after(mad: Unixdays) -> Result<Vec<entity::Model>, DbErr> {
+    let conn = super::common::get_connection().await?;
+    Ok(Entity::find().filter(entity::Column::Date.gte(i32::from(mad))).order_by_asc(entity::Column::Date).all(&conn).await?)
 }

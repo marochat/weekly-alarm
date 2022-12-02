@@ -12,6 +12,7 @@ use api::config;
 use api::chimes;
 use api::test;
 use api::sound;
+use api::holiday;
 
 
 #[tokio::main]
@@ -48,9 +49,13 @@ async fn main() {
       sound::update_sound_title,
       sound::delete_sound_data,
       sound::read_all_sound_data,
+      holiday::create_holiday,
+      holiday::update_holiday,
+      holiday::delete_holiday,
+      holiday::read_holidays,
+      holiday::read_holidays_from_file,
       test::get_tuple,
       test::get_file_obj,
-
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

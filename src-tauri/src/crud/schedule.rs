@@ -8,7 +8,7 @@ use crate::entities::prelude::Schedule as Entity;
 use crate::entities::{schedule as entity, chime_data};
 use crate::entities::daily_chimes;
 use crate::entities::public_holidays;
-use crate::entities::prelude::{PublicHolidays, DailyChimes, ChimeData };
+use crate::entities::prelude::{PublicHolidays, DailyChimes };
 
 use chrono::{ NaiveDate, Datelike, Weekday };
 use crate::app::datetime::{ get_current_timestamp_f64, DateInfo, Unixdays };
@@ -78,6 +78,7 @@ pub async fn read_all() -> Result<Vec<entity::Model>, DbErr>{
     Ok(Entity::find().all(&conn).await?)
 }
 
+#[allow(dead_code)]
 pub async fn read(id: i32) -> Result<Vec<(entity::Model, Option<daily_chimes::Model>)>, DbErr> {
     let conn = super::common::get_connection().await?;
     let ret = Entity::find_by_id(id).find_also_related(daily_chimes::Entity).all(&conn).await?;
