@@ -1,5 +1,6 @@
-use std::{convert::From, ops::Div };
-use chrono::{ DateTime, NaiveDate, Date, Utc, Local, TimeZone, NaiveTime, Duration, Timelike, Datelike, NaiveDateTime };
+use std::{convert::From};
+// use chrono::{ DateTime, NaiveDate, Date, Utc, Local, TimeZone, NaiveTime, Duration, Timelike, Datelike, NaiveDateTime };
+use chrono::{ DateTime, NaiveDate, Utc, Local, NaiveTime, Duration, Timelike, Datelike, NaiveDateTime };
 
 pub const ONE_DAY_SECONDS: i32 = 3600 * 24;
 
@@ -47,23 +48,23 @@ impl From<&NaiveDateTime> for Unixtime {
     }
 }
 
-impl From<Unixtime> for DateTime<Utc> {
-    fn from(ut: Unixtime) -> DateTime<Utc> {
-        Utc.timestamp(ut.into(), 0)
-    }
-}
+// impl From<Unixtime> for DateTime<Utc> {
+//     fn from(ut: Unixtime) -> DateTime<Utc> {
+//         Utc.timestamp(ut.into(), 0)
+//     }
+// }
 
-impl From<Unixtime> for DateTime<Local> {
-    fn from(ut: Unixtime) -> DateTime<Local> {
-        Local.timestamp(ut.into(), 0)
-    }
-}
+// impl From<Unixtime> for DateTime<Local> {
+//     fn from(ut: Unixtime) -> DateTime<Local> {
+//         Local.timestamp(ut.into(), 0)
+//     }
+// }
 
-impl From<Unixtime> for NaiveDateTime {
-    fn from(ut: Unixtime) -> Self {
-        NaiveDateTime::from_timestamp(ut.into(), 0)
-    }
-}
+// impl From<Unixtime> for NaiveDateTime {
+//     fn from(ut: Unixtime) -> Self {
+//         NaiveDateTime::from_timestamp(ut.into(), 0)
+//     }
+// }
 
 impl From<&NaiveDate> for Unixdays {
     fn from(nd: &NaiveDate) -> Self {
@@ -76,38 +77,38 @@ impl From<&NaiveDate> for Unixdays {
 impl From<Unixdays> for NaiveDate {
     fn from(ud: Unixdays) -> Self {
         let ut = ud.0 as i64 * ONE_DAY_SECONDS as i64 + 1;
-        NaiveDateTime::from_timestamp(ut, 0).date()
+        NaiveDateTime::from_timestamp_opt(ut, 0).unwrap().date()
     }
 }
 
-impl From<&Date<Local>> for Unixdays {
-    fn from(dt: &Date<Local>) -> Self {
-        //let tmstmp = dt.and_time(NaiveTime::from_hms(0, 0, 0)).unwrap().timestamp();
-        let tmstmp = dt.and_time(Seconds(0).into()).unwrap().timestamp();
-        //println!("debug: {}",Local.timestamp(tmstmp, 0).to_string());
-        let days: i64 = tmstmp.div(ONE_DAY_SECONDS as i64);
-        Unixdays(days.try_into().unwrap())
-    }
-}
+// impl From<&Date<Local>> for Unixdays {
+//     fn from(dt: &Date<Local>) -> Self {
+//         //let tmstmp = dt.and_time(NaiveTime::from_hms(0, 0, 0)).unwrap().timestamp();
+//         let tmstmp = dt.and_time(Seconds(0).into()).unwrap().timestamp();
+//         //println!("debug: {}",Local.timestamp(tmstmp, 0).to_string());
+//         let days: i64 = tmstmp.div(ONE_DAY_SECONDS as i64);
+//         Unixdays(days.try_into().unwrap())
+//     }
+// }
 
-impl From<Unixdays> for Date<Local> {
-    fn from(ud: Unixdays) -> Self {
-        let unixtime = ud.0 as i64 * ONE_DAY_SECONDS as i64 + 1;
-        Local.timestamp(unixtime, 0).date()
-    }
-}
+// impl From<Unixdays> for Date<Local> {
+//     fn from(ud: Unixdays) -> Self {
+//         let unixtime = ud.0 as i64 * ONE_DAY_SECONDS as i64 + 1;
+//         Local.timestamp(unixtime, 0).date()
+//     }
+// }
 
-impl From<Unixdays> for Date<Utc> {
-    fn from(ud: Unixdays) -> Self {
-        let unixtime = ud.0 as i64 * ONE_DAY_SECONDS as i64 + 1;
-        Utc.timestamp(unixtime, 0).date()
-    }
-}
+// impl From<Unixdays> for Date<Utc> {
+//     fn from(ud: Unixdays) -> Self {
+//         let unixtime = ud.0 as i64 * ONE_DAY_SECONDS as i64 + 1;
+//         Utc.timestamp(unixtime, 0).date()
+//     }
+// }
 
 impl From<Seconds> for NaiveTime {
     fn from(sec: Seconds) -> Self {
         let secs = Duration::seconds(sec.0 as i64);
-        let ret = NaiveTime::from_hms(0,0,0) + secs;
+        let ret = NaiveTime::from_hms_opt(0,0,0).unwrap() + secs;
         ret
     }
 }
@@ -144,18 +145,18 @@ impl From<MonthDay> for MonthAndDay {
     }
 }
 
-impl From<&Date<Local>> for MonthAndDay {
-    fn from(&dt: &Date<Local>) -> Self {
-        MonthAndDay(dt.month() as i32, dt.day() as i32)
-    }
+// impl From<&Date<Local>> for MonthAndDay {
+//     fn from(&dt: &Date<Local>) -> Self {
+//         MonthAndDay(dt.month() as i32, dt.day() as i32)
+//     }
 
-}
+// }
 
-impl From<&Date<Utc>> for MonthAndDay {
-    fn from(&dt: &Date<Utc>) -> Self {
-        MonthAndDay(dt.month() as i32, dt.day() as i32)
-    }
-}
+// impl From<&Date<Utc>> for MonthAndDay {
+//     fn from(&dt: &Date<Utc>) -> Self {
+//         MonthAndDay(dt.month() as i32, dt.day() as i32)
+//     }
+// }
 
 impl From<YearDate> for NaiveDate {
     fn from(yd: YearDate) -> Self {

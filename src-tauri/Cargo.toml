@@ -1,11 +1,11 @@
 [package]
-name = "app"
+name = "weekly-alarm"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "Weekly Alarm App"
+authors = ["marochat", "mamiyan@marochanet.org"]
 license = ""
-repository = ""
-default-run = "app"
+repository = "https://github.com/marochat/weekly-alarm"
+default-run = "weekly-alarm"
 edition = "2021"
 rust-version = "1.57"
 
