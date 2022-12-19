@@ -1,9 +1,10 @@
 import React from 'react';
 import * as Bsr from 'react-bootstrap';
 import { confirm, open as fileOpen } from '@tauri-apps/api/dialog';
-import { basename } from '@tauri-apps/api/path';
+import { basename, join } from '@tauri-apps/api/path';
+import { copyFile } from '@tauri-apps/api/fs';
 
-import { FullFrame, TBI, types } from './common';
+import { FullFrame, TBI, types, util } from './common';
 import { invoke } from '@tauri-apps/api/tauri';
 import { globalTimer, params, getAudioSource } from './application';
 
@@ -105,13 +106,18 @@ export const AlarmSoundConf =  ({closeFunc}: {closeFunc: () => void}) => {
         )
     }
     const addSoundItem = async () => {
+        const dbpath = await invoke('get_db_path') as string;
+        util.logging(dbpath);
         const fn: string | null = await fileOpen(
             {filters: [{extensions:['mp3'], name: 'Audio'}], multiple: false, title: 'サウンドファイル選択'}
         ) as string | null
         if (fn) {
             // basename 第2引数で拡張子を削除しないパターン
             const name = await basename(fn, '')
-            await invoke('create_sound', {title: name, path: fn});
+            const path = await join(dbpath, name);
+            util.logging(path);
+            await copyFile(fn, path);
+            await invoke('create_sound', {title: name, path: name});
             await params.reload_sound();
             //params.sound.push({name: name, path: fn});
             setSound(params.sound.concat());

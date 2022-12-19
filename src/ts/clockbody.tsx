@@ -101,9 +101,11 @@ export const ClockBody = () => {
             //console.log(val)
             audioCtx.current = new AudioContext();
             audioSrc.current = await getAudioSource(audioCtx.current!, dummyChime);
-            console.log('ini start11')
-            audioSrc.current.onended = () => console.log('ini ended...')
-            audioSrc.current.start(0);
+            if (audioSrc.current) {
+                console.log('ini start11')
+                audioSrc.current.onended = () => console.log('ini ended...')
+                audioSrc.current.start(0);
+            }
             // getAudioSource(audioCtx.current!, dummyChime).then(src => {
             //     console.log('ini start11')
             //     src.onended = () => console.log('ini ended...')

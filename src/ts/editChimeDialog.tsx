@@ -52,8 +52,10 @@ export const EditChimeDialog = (
                     await invoke('logging');
                     audioCtx.current = new AudioContext();
                     audioSrc.current = await getAudioSource(audioCtx.current, snd.value || snd.path || '');
-                    audioSrc.current.onended = () => setPlayLabel('▶');
-                    audioSrc.current.start(0)
+                    if(audioSrc.current){
+                        audioSrc.current.onended = () => setPlayLabel('▶');
+                        audioSrc.current.start(0)    
+                    }
                     // audioRef.current.play(snd.value || snd.path || '', () => setPlayLabel('▶'));
                 }
             }    

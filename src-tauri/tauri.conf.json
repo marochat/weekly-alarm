@@ -60,6 +60,25 @@
         "title": "Weekly Alarm",
         "width": 800
       }
-    ]
+    ],
+    "cli": {
+      "description": "Weekly Alarm scheduler.",
+      "longDescription": "",
+      "beforeHelp": "",
+      "afterHelp": "",
+      "args": [
+        {
+          "name": "nosound",
+          "short": "n",
+          "description": "no sound mode"
+        },
+        {
+          "name": "dbpath",
+          "short": "d",
+          "takesValue": true,
+          "description": "set Detabase Path"
+        }
+      ]
+    }
   }
 }

@@ -1,5 +1,6 @@
 //import i18next, { loadLanguages } from "i18next";
 //import { Uint8BufferAttribute } from "three";
+import { invoke } from '@tauri-apps/api';
 import React from 'react';
 
 export const TBI = ({mes = ''}: {mes? : string}) => {
@@ -544,6 +545,9 @@ export namespace util {
         return null;
     }
 
+    export const logging = (str: any) => {
+        invoke('logging', {mes: str.toString()}).then(() => {});
+    }
     /**
      * async版timeout関数 Promise<void>を返すのでawaitする
      * @param  {number} ms

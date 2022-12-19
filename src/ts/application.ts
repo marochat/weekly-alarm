@@ -1,8 +1,9 @@
 import { invoke } from '@tauri-apps/api/tauri';
+import { getMatches } from '@tauri-apps/api/cli';
 import { platform } from '@tauri-apps/api/os';
 import { appWindow, LogicalSize } from '@tauri-apps/api/window';
 import { message, ask, open as fileOpen } from '@tauri-apps/api/dialog';
-import { basename } from '@tauri-apps/api/path';
+import { basename, join } from '@tauri-apps/api/path';
 import { exists } from '@tauri-apps/api/fs';
 
 import { ajax, util, types, assertIsDefined, assertIsInstanceOf, assertNonNullabl } from './common';
@@ -18,6 +19,7 @@ export namespace params {
     // export let sound: { [x: string]: HTMLSourceElement; };
     // チャイム音源のリスト
     export let sound: { name: string, value?: string, copyright?: string, path?: string, org?: boolean }[] = [];
+    export let nosoundMode = false;
 
     /**
      * paramsの初期化
@@ -31,7 +33,13 @@ export namespace params {
         const snds: any[] = await invoke('read_all_sound_data');
         for (let snd of snds) {
             sound.push({name: snd.title, path: snd.path});
-        } 
+        }
+        getMatches().then((matches) => {
+            console.log(matches.args.nosound.value)
+            nosoundMode = matches.args.nosound.value as boolean;
+            console.log(matches.args.dbpath.value)
+        })
+        
     }
 
     export const reload_sound = async () => {
@@ -261,12 +269,15 @@ const WebAudioAPI = class {
     }
 }
 
-export const getAudioSource = async (ctx: AudioContext, url: string) => {
+export const getAudioSource = async (ctx: AudioContext, url: string): Promise<AudioBufferSourceNode | null> => {
+    // if (params.nosoundMode) {
+    //     return null;
+    // }
     const src: AudioBufferSourceNode = ctx.createBufferSource();
     // const res = await fetch(url); //.then(res => res.arrayBuffer())
     let aryb: ArrayBuffer;
     //const isPath: boolean = await exists(url) as unknown as boolean;
-    if (!url.match(/^\/.*/)) {
+    if (url.match(/^http:.*/)) {
         const res = await fetch(url);
         // if(res.status !== 200) {
         //     console.log('fetch error!')
@@ -275,7 +286,10 @@ export const getAudioSource = async (ctx: AudioContext, url: string) => {
         aryb = await res.arrayBuffer();
     } else {
         //console.log(`err : ${error}`);
-        console.log(url);
+        if (!url.match(/^\/.*/)){
+            const dpath = await invoke('get_db_path') as string;
+            url = await join(dpath, url);
+        }
         const val = await invoke('get_file_obj', { path: url })
         .catch(e => console.log(e));
         const val1 = new Uint8Array(val as Array<number>);

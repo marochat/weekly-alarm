@@ -4,11 +4,12 @@ use tauri;
 use crate::crud::app_config;
 use crate::crud::audio_data;
 use crate::entities::audio_data as audio_data_entity;
+use crate::app::path::get_database_path;
 
 #[tauri::command]
 pub fn logging(mes: Option<String>) {
     if let Some(val) = mes {
-        println!("{}", val);
+        println!("logging: {}", val);
     }
 }
 
@@ -90,4 +91,9 @@ pub async fn read_all_audio_data() -> Result<Vec<audio_data_entity::Model>, Stri
     } else {
         Err("database error.".into())
     }
+}
+
+#[tauri::command]
+pub fn get_db_path() -> Result<String, String> {
+    Ok(get_database_path())
 }
