@@ -8,10 +8,10 @@ pub const DATABASE_NAME: &'static str = "app_debug.db";
 #[cfg(not(debug_assertions))]
 pub const DATABASE_NAME: &'static str = "app.db";
 
-#[cfg(debug_assertions)]
-pub const TEST_GLOBAL: &'static str = "debug flag";
-#[cfg(not(debug_assertions))]
-pub const TEST_GLOBAL: &'static str = "release flag";
+// #[cfg(debug_assertions)]
+// pub const TEST_GLOBAL: &'static str = "debug flag";
+// #[cfg(not(debug_assertions))]
+// pub const TEST_GLOBAL: &'static str = "release flag";
 
 /**
  * データベース関連

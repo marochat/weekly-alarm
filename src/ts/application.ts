@@ -270,14 +270,14 @@ const WebAudioAPI = class {
 }
 
 export const getAudioSource = async (ctx: AudioContext, url: string): Promise<AudioBufferSourceNode | null> => {
-    // if (params.nosoundMode) {
-    //     return null;
-    // }
+    if (params.nosoundMode) {
+        return null;
+    }
     const src: AudioBufferSourceNode = ctx.createBufferSource();
     // const res = await fetch(url); //.then(res => res.arrayBuffer())
     let aryb: ArrayBuffer;
     //const isPath: boolean = await exists(url) as unknown as boolean;
-    if (url.match(/^http:.*/)) {
+    if (url.match(/^(http|tauri):.*/)) {
         const res = await fetch(url);
         // if(res.status !== 200) {
         //     console.log('fetch error!')

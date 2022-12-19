@@ -33,8 +33,8 @@ fn main() {
     .setup(move |app| {
       match app.get_cli_matches() {
         Ok(args) => {
-          println!("{}", args.args["nosound"].value);
-          println!("{}", args.args["dbpath"].value);
+          println!("no sound mode : {}", args.args["nosound"].value);
+          println!("custom db path : {}", args.args["dbpath"].value);
           let pth = &args.args["dbpath"].value;
           match pth.as_str() {
             Some(p) => *DBPATH.lock().unwrap() = String::from(p),
@@ -50,7 +50,6 @@ fn main() {
         crud::common::up().await.unwrap();
         // テスト関数
         app::test::app_test().await;
-        println!("tskkkkk");
       };
       tauri::async_runtime::block_on(tsk);
       Ok(())

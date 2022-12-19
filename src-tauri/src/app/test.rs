@@ -4,7 +4,6 @@ use crate::crud;
 // use super::datetime::{ Unixtime, Unixdays, Seconds };
 // use tauri;
 //pub struct Holiday(i32, i32, &'static str);
-use crate::app::info;
 
 //pub const PUBLIC_HILIDAYS: [Holiday; 1] = [
 //
@@ -18,16 +17,16 @@ pub async fn app_test() {
     let param = "xdata";
     let value = "xvalue";
     match crud::app_config::read_value(param.into()).await.unwrap() {
-        Some(s) => {
-            println!("{}: {} found!", param, s);
+        Some(_s) => {
+            println!("DB file found!");
         },
         _ => {
-            println!("not found param data. and create");
+            println!("DB file not found data. and create");
             crud::app_config::setparam(param.into(), Some(value.into())).await.unwrap();
         }
     }
 
-    println!("{}", info::TEST_GLOBAL);
+    // println!("{}", info::TEST_GLOBAL);
     // let dt = Utc::now();
     // let lt: DateTime<Local> = dt.into();
     // let ut: i64 = Unixtime::from(&dt).into();
